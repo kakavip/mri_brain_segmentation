@@ -1,0 +1,11 @@
+RANDOM_SEED = 123
+IMG_SIZE = (224, 224)
+
+BASE_PATH = './origin_data/brain_tumor_dataset/'
+DATA_PATH = './data_train'
+
+TRAIN_DATA_PATH = f"{DATA_PATH}/TRAIN"
+TEST_DATA_PATH = f"{DATA_PATH}/TEST"
+VAL_DATA_PATH = f"{DATA_PATH}/VAL"
+TRAIN_DIR = f'{DATA_PATH}/TRAIN_CROP/'
+VAL_DIR = f'{DATA_PATH}/VAL_CROP/'

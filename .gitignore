@@ -1,0 +1,5 @@
+data_train/
+origin_data/
+
+*.ipynb
+.vscode
