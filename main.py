@@ -2,6 +2,8 @@ import time
 from plotly.offline import init_notebook_mode, iplot
 from utils.preprocess import crop_imgs, load_data, preprocess_data, preprocess_imgs, save_new_images, init_train_data, train_data_generator
 from utils.trainer import setup_train
+from tensorflow.keras.callbacks import ModelCheckpoint
+from utils.containts import *
 
 init_notebook_mode(connected=True)
 
@@ -13,12 +15,20 @@ if __name__ == "__main__":
 
     start = time.time()
 
+    checkpoint_filepath: str = MODEL_DATA_PATH
+
+    checkpoint_model_callback = ModelCheckpoint(
+        filepath=checkpoint_filepath,
+        save_weights_only=True,
+        monitor='val_acc',
+        mode='max',
+        save_best_only=False)
+
     vgg16_history = trainer.fit_generator(
         train_generator,
-        # steps_per_epoch=20,
         epochs=100,
         validation_data=validation_generator,
-        # validation_steps=30,
+        callbacks=[checkpoint_model_callback]
     )
 
     end = time.time()

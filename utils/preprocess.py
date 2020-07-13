@@ -12,6 +12,8 @@ from .containts import *
 
 def init_train_data():
     # create path for training data
+    if not os.path.exists(MODEL_DATA_PATH):
+        os.mkdir(MODEL_DATA_PATH)
     if not os.path.exists(DATA_PATH):
         os.mkdir(DATA_PATH)
     for d in [TEST_DATA_PATH, TRAIN_DATA_PATH, VAL_DATA_PATH]:
