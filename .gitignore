@@ -1,5 +1,6 @@
 data_train/
 origin_data/
+models/
 
 *.ipynb
 .vscode

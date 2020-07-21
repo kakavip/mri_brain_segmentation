@@ -1,17 +1,21 @@
 import time
 from plotly.offline import init_notebook_mode, iplot
 from utils.preprocess import crop_imgs, load_data, preprocess_data, preprocess_imgs, save_new_images, init_train_data, train_data_generator
-from utils.trainer import setup_train
+from utils.trainer import setup_train, save_model, ModelTypes
 from tensorflow.keras.callbacks import ModelCheckpoint
 from utils.containts import *
 
 init_notebook_mode(connected=True)
 
 if __name__ == "__main__":
+
     init_train_data()
     X_val_prep, X_test_prep, y_val, y_test = preprocess_data()
     train_generator, validation_generator = train_data_generator()[:2]
-    trainer = setup_train()
+
+    model_type: ModelTypes = ModelTypes.RESNET_50
+
+    trainer = setup_train(_type=model_type)
 
     start = time.time()
 
@@ -24,7 +28,7 @@ if __name__ == "__main__":
         mode='max',
         save_best_only=False)
 
-    vgg16_history = trainer.fit_generator(
+    trainer_history = trainer.fit_generator(
         train_generator,
         epochs=100,
         validation_data=validation_generator,
@@ -40,3 +44,5 @@ if __name__ == "__main__":
 
     _, train_acc = trainer.evaluate(X_val_prep, y_val, verbose=0)
     _, test_acc = trainer.evaluate(X_test_prep, y_test, verbose=0)
+
+    save_model(trainer, MODEL_DATA_PATH_SOLID, _type=model_type)

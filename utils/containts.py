@@ -4,6 +4,7 @@ IMG_SIZE = (224, 224)
 BASE_PATH = './origin_data/brain_tumor_dataset/'
 DATA_PATH = './data_train'
 MODEL_DATA_PATH = f"./models/"
+MODEL_DATA_PATH_SOLID = f"{MODEL_DATA_PATH}/solid"
 
 TRAIN_DATA_PATH = f"{DATA_PATH}/TRAIN"
 TEST_DATA_PATH = f"{DATA_PATH}/TEST"
