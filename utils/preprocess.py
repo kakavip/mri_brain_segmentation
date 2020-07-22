@@ -109,6 +109,44 @@ def load_data(dir_path, img_size=(100, 100)):
     return X, y, labels
 
 
+def process_image(img, add_pixels_value=0):
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # threshold the image, then perform a series of erosions +
+    # dilations to remove any small regions of noise
+    thresh = cv2.threshold(gray, 45, 255, cv2.THRESH_BINARY)[1]
+    thresh = cv2.erode(thresh, None, iterations=2)
+    thresh = cv2.dilate(thresh, None, iterations=2)
+
+    # find contours in thresholded image, then grab the largest one
+    cnts = cv2.findContours(
+        thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    c = max(cnts, key=cv2.contourArea)
+
+    # add contour on the image
+    img_cnt = cv2.drawContours(img.copy(), [c], -1, (0, 255, 255), 4)
+
+    # find the extreme points
+    extLeft = tuple(c[c[:, :, 0].argmin()][0])
+    extRight = tuple(c[c[:, :, 0].argmax()][0])
+    extTop = tuple(c[c[:, :, 1].argmin()][0])
+    extBot = tuple(c[c[:, :, 1].argmax()][0])
+
+    # add extreme points
+    img_pnt = cv2.circle(img_cnt.copy(), extLeft, 8, (0, 0, 255), -1)
+    img_pnt = cv2.circle(img_pnt, extRight, 8, (0, 255, 0), -1)
+    img_pnt = cv2.circle(img_pnt, extTop, 8, (255, 0, 0), -1)
+    img_pnt = cv2.circle(img_pnt, extBot, 8, (255, 255, 0), -1)
+
+    ADD_PIXELS = add_pixels_value
+    new_img = img[extTop[1]-ADD_PIXELS:extBot[1]+ADD_PIXELS,
+                  extLeft[0]-ADD_PIXELS:extRight[0]+ADD_PIXELS].copy()
+
+    return img_cnt, img_pnt, new_img
+
+
 def crop_imgs(set_name, add_pixels_value=0):
     """
     Finds the extreme points on the image and crops the rectangular out of them
@@ -190,3 +228,14 @@ def preprocess_data() -> (List, List, List, List):
     X_val_prep = preprocess_imgs(set_name=X_val_crop, img_size=IMG_SIZE)
 
     return X_val_prep, X_test_prep, y_val, y_test
+
+
+def image_data_generator():
+    return ImageDataGenerator(rotation_range=15,
+                              width_shift_range=0.05,
+                              height_shift_range=0.05,
+                              rescale=1./255,
+                              shear_range=0.05,
+                              brightness_range=[0.1, 1.5],
+                              horizontal_flip=True,
+                              vertical_flip=True)
